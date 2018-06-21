@@ -1,0 +1,92 @@
+
+<div class="container">
+    {{!-- top header --}}
+    <div class="row top">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <img id="hamburger" src=../assets/img/hamburger.png>
+            <p class="headtext"> Eat Da Burger</p>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    {{!-- submit a burger --}}
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-5">
+            <form id="burgertime">
+                <div class="form-row align-items-center addBurg">
+                    <div class="col-8">
+                        <label class="sr-only" for="inlineFormInput"></label>
+                        <input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Order A Burger">
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-mainSubmit mb-2">Add</button>
+                    </div>
+                </div>
+            </form>
+        <div class="col-md-2"></div>
+        </div>
+    </div>    
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-4 burgz">
+            <p class="burgztitle">Burgers to Eat</p>
+                {{#each burgers}}
+                    {{#unless ate}}
+                      <span><button class = "eatBurger" data-burger-id = "{{id}}">eat me!</button>{{> burgers/burger-block ate=true}}</span>
+                    {{/unless}}
+                {{/each}}
+        </div>
+        <div class="col-4 burgz">
+             <p class="burgztitle">Burgers Ate</p>
+                {{#each burgers}}
+                    {{#if ate}}
+                      {{> burgers/burger-block ate=true}}
+                    {{/if}}
+                {{/each}}
+        </div>
+        <div class="col-2"></div>
+    </div>
+
+</div>
+
+<script>
+
+$(function() {
+    $(".eatBurger").on("click", function(event) {
+        var id = $(this).data("burger-id");
+        var justAte = $(this).data("justAte");
+        var ateState = {
+            ate: justAte
+        };
+        $.ajax("/api/burgers/" + id, {
+            type: "PUT",
+            data: ateState
+        }).then(
+            function() {
+                console.log("this burger was", justAte);
+                location.reload();
+            }
+        )
+    });
+
+    $("#burgertime").submit(function (event) {
+        event.preventDefault();
+        var newBurger = {
+            burger: $("#inlineFormInput").val()
+        };
+        console.log(newBurger);
+        $.ajax("api/burgers", {
+            type: "POST",
+            data: newBurger
+        }).then(
+            function() {
+                console.log("you ordered a burger");
+                location.reload();
+            }
+        );
+    });  
+})
+
+</script>
+
